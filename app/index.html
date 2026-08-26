@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Medical Diagnosis System</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    h1 { color: #1a4d8f; }
+    #result { margin-top: 20px; padding: 15px; border-radius: 8px; }
+    .normal { background: #e6f4ea; color: #1e7d32; }
+    .pneumonia { background: #fdecea; color: #c62828; }
+    img { max-width: 100%; margin-top: 10px; border-radius: 8px; }
+    button { padding: 10px 20px; background: #1a4d8f; color: white; border: none; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>AI-Based Medical Diagnosis System</h1>
+  <p>Upload a chest X-ray image to get a prediction with an explainability heatmap.</p>
+
+  <input type="file" id="fileInput" accept="image/*">
+  <button onclick="predict()">Analyze X-Ray</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function predict() {
+      const fileInput = document.getElementById("fileInput");
+      const resultDiv = document.getElementById("result");
+
+      if (!fileInput.files.length) {
+        alert("Please select an image first.");
+        return;
+      }
+
+      resultDiv.innerHTML = "Analyzing...";
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      const response = await fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      const cls = data.prediction === "NORMAL" ? "normal" : "pneumonia";
+      resultDiv.className = cls;
+      resultDiv.innerHTML = `
+        <h2>Prediction: ${data.prediction}</h2>
+        <p>NORMAL confidence: ${(data.confidence.NORMAL * 100).toFixed(1)}%</p>
+        <p>PNEUMONIA confidence: ${(data.confidence.PNEUMONIA * 100).toFixed(1)}%</p>
+        <p><b>Grad-CAM Explanation:</b></p>
+        <img src="data:image/png;base64,${data.gradcam_image_base64}" alt="Grad-CAM heatmap">
+      `;
+    }
+  </script>
+</body>
+</html>
