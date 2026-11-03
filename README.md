@@ -1,7 +1,6 @@
 # 🏥 AI Medical Diagnosis System
 
-# Dataset: Chest X-Ray Images (Pneumonia) by Paul Mooney, download from Kaggle, place in chest_xray/ folder.
-
+## Dataset: Chest X-Ray Images (Pneumonia) by Paul Mooney, download from Kaggle, place in chest_xray/ folder.
 
 ### Pneumonia Detection from Chest X-Ray Images Using Deep Learning
 
